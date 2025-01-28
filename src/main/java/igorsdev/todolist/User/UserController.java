@@ -1,6 +1,8 @@
-package igorsdev.todolist.User;
+package igorsdev.todolist.user;
 
+import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,9 +16,13 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/create")
-    public UserModel postUser(@RequestBody UserModel user) {
-        System.out.println(user.getPassword());
-        return userService.create(user);
+    public ResponseEntity<?> postUser(@RequestBody UserModel user) {
+        try {
+           UserModel createdUser = userService.create(user);
+            return ResponseEntity.status(201).body(createdUser);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
     }
 
 }
