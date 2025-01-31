@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import at.favre.lib.crypto.bcrypt.BCrypt;
 import igorsdev.todolist.user.UserModel;
 import igorsdev.todolist.user.UserRepository;
 import jakarta.servlet.FilterChain;
@@ -40,10 +41,16 @@ public class FilterTaskAuth extends OncePerRequestFilter {
 
                 Optional<UserModel> searchUser = userRepository.findByUsername(username);
                 if(searchUser.isEmpty()){
-                    response.sendError(401, "Usuário sem autorização");
+                    response.sendError(401);
                 }else{
+                    var passwordVerify = BCrypt.verifyer().verify(password.toCharArray(), searchUser.get().getPassword());
+                    if(passwordVerify.verified){
+                        filterChain.doFilter(request, response);
+                    }else{
+                        response.sendError(401);
+                    }
+
                     
-                    filterChain.doFilter(request, response);
                 }
 }
 
