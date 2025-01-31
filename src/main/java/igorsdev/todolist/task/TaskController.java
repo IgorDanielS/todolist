@@ -16,7 +16,6 @@ public class TaskController {
 
     @PostMapping("/create")
     public ResponseEntity<?> createTask(@RequestBody TaskModel task){
-        System.out.println("Chegou no controller");
         try {
             taskService.create(task);
             return ResponseEntity.ok().body(task);
