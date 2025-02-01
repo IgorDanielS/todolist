@@ -28,8 +28,7 @@ public class FilterTaskAuth extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         var servletPath = request.getServletPath();
-        System.out.println(servletPath);
-        //fix: this method should work for all tasks endpoint but "/tasks/" for all doesnt work
+        // System.out.println(servletPath);
         if (servletPath.equals("/tasks/create")) {
 
             var authorization = request.getHeader("Authorization");
@@ -51,6 +50,7 @@ public class FilterTaskAuth extends OncePerRequestFilter {
             } else {
                 var passwordVerify = BCrypt.verifyer().verify(password.toCharArray(), searchUser.get().getPassword());
                 if (passwordVerify.verified) {
+                    request.setAttribute("idUser", searchUser.get().getId());
                     filterChain.doFilter(request, response);
                 } else {
                     response.sendError(401);
