@@ -25,15 +25,14 @@ public class FilterTaskAuth extends OncePerRequestFilter {
     @Autowired
     UserRepository userRepository;
 
-    private static final Set<String> PROTECTED_PATHS = Set.of("/tasks/create", "/tasks/all");
-
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
         var servletPath = request.getServletPath();
+
         // System.out.println(servletPath);
-            if (PROTECTED_PATHS.contains(servletPath)) {
+        if (servletPath.startsWith("/tasks/")) {
 
             var authorization = request.getHeader("Authorization");
 
@@ -61,7 +60,7 @@ public class FilterTaskAuth extends OncePerRequestFilter {
                 }
 
             }
-        }else{
+        } else {
             filterChain.doFilter(request, response);
         }
     }

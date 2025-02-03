@@ -48,6 +48,19 @@ public class TaskService {
             throw new ResponseStatusException(HttpStatus.NO_CONTENT, "No tasks found.");
         }
         return tasks;
+    }
 
+    public TaskModel updateTask(HttpServletRequest request, UUID id, TaskModel newTask){
+        Optional<TaskModel> taskToFind = taskRepository.findById(id);
+        System.out.println(taskToFind.get());
+        if(taskToFind.isEmpty()){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"No tasks where found with id:"+id);
+        }
+        var idRequest = (UUID) request.getAttribute("idUser");
+        System.out.println(idRequest);
+        newTask.setIdUser(idRequest);
+        newTask.setId(id);
+        System.out.println(newTask.getIdUser());
+        return taskRepository.save(newTask);
     }
 }

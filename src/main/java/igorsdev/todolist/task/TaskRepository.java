@@ -10,4 +10,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TaskRepository extends JpaRepository<TaskModel, UUID>{
     List<TaskModel> findByIdUser(UUID idUser);
+    Optional<TaskModel> findById(UUID id);
 }
