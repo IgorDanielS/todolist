@@ -3,6 +3,7 @@ package igorsdev.todolist.task;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.tomcat.util.http.parser.HttpParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,9 +34,9 @@ public class TaskController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<?> getAllTask(){
+    public ResponseEntity<?> getAllTask(HttpServletRequest request){
         try {
-            List<TaskModel> allTasks = taskService.getAll();
+            List<TaskModel> allTasks = taskService.getAll(request);
             return ResponseEntity.ok().body(allTasks);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());

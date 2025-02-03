@@ -19,9 +19,11 @@ public class TaskService {
     private TaskRepository taskRepository;
 
     public TaskModel create(TaskModel task, HttpServletRequest request) throws Exception {
-        var idRequest = request.getAttribute("idUser");
-        Optional<TaskModel> taskToFind = taskRepository.findByTitle(task.getTitle());
         var currentDate = LocalDateTime.now();
+        var idRequest = (UUID) request.getAttribute("idUser");
+        
+        Optional<TaskModel> taskToFind = taskRepository.findByTitle(task.getTitle());
+        //adicionar script para procurar apenas no repositório do Usuário autenticado no momento
         if (taskToFind.isPresent()) {
             throw new Exception("Task with same title already existed!");
         }
@@ -31,13 +33,14 @@ public class TaskService {
         if (task.getStartAt().isAfter(task.getEndAt())) {
             throw new Exception("Cant attribute End At before Start At date");
         }
-        task.setIdUser((UUID) idRequest);
+        task.setIdUser(idRequest);
 
         return taskRepository.save(task);
     }
 
-    public List<TaskModel> getAll() throws Exception {
-        List<TaskModel> tasks = taskRepository.findAll();
+    public List<TaskModel> getAll(HttpServletRequest request) throws Exception {
+        var idRequest = request.getAttribute("idUser");
+        List<TaskModel> tasks = taskRepository.findByIdUser((UUID) idRequest);
         if (tasks.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NO_CONTENT, "No tasks found.");
         }
