@@ -21,9 +21,13 @@ public class TaskService {
     public TaskModel create(TaskModel task, HttpServletRequest request) throws Exception {
         var currentDate = LocalDateTime.now();
         var idRequest = (UUID) request.getAttribute("idUser");
-        
-        Optional<TaskModel> taskToFind = taskRepository.findByTitle(task.getTitle());
-        //adicionar script para procurar apenas no repositório do Usuário autenticado no momento
+
+        List<TaskModel> taskFromUser = taskRepository.findByIdUser(idRequest);
+
+        Optional<TaskModel> taskToFind = taskFromUser.stream()
+                .filter(t -> t.getTitle().equalsIgnoreCase(task.getTitle()))
+                .findFirst();
+
         if (taskToFind.isPresent()) {
             throw new Exception("Task with same title already existed!");
         }
@@ -34,7 +38,6 @@ public class TaskService {
             throw new Exception("Cant attribute End At before Start At date");
         }
         task.setIdUser(idRequest);
-
         return taskRepository.save(task);
     }
 
