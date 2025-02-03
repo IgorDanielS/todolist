@@ -1,6 +1,7 @@
 package igorsdev.todolist.task;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,5 +27,13 @@ public class TaskService {
         }
     
         return taskRepository.save(task);
+    }
+
+    public List<TaskModel> getAll() throws Exception
+    {
+        if(taskRepository.count() <= 0){
+            throw new Exception("Theres no taks registred. Please, create one.");
+        }
+        return taskRepository.findAll();
     }
 }
