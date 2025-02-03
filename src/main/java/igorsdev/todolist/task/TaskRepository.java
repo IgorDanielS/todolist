@@ -1,5 +1,6 @@
 package igorsdev.todolist.task;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -10,4 +11,6 @@ import org.springframework.stereotype.Repository;
 public interface TaskRepository extends JpaRepository<TaskModel, UUID>{
 
     Optional<TaskModel> findByTitle(String title);
+
+    List<TaskModel> findByIdUser(UUID idUser);
 }

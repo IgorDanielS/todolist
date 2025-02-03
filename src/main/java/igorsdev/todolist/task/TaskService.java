@@ -3,37 +3,45 @@ package igorsdev.todolist.task;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @Service
 public class TaskService {
-    
+
     @Autowired
     private TaskRepository taskRepository;
 
-    public TaskModel create(TaskModel task) throws Exception{
+    public TaskModel create(TaskModel task, HttpServletRequest request) throws Exception {
+        var idRequest = request.getAttribute("idUser");
         Optional<TaskModel> taskToFind = taskRepository.findByTitle(task.getTitle());
         var currentDate = LocalDateTime.now();
-        if(taskToFind.isPresent()){
+        if (taskToFind.isPresent()) {
             throw new Exception("Task with same title already existed!");
         }
-        if(currentDate.isAfter(task.getStartAt()) || currentDate.isAfter(task.getEndAt())){
+        if (currentDate.isAfter(task.getStartAt()) || currentDate.isAfter(task.getEndAt())) {
             throw new Exception("Cant attribute past dates to taks!");
         }
-        if(task.getStartAt().isAfter(task.getEndAt())){
+        if (task.getStartAt().isAfter(task.getEndAt())) {
             throw new Exception("Cant attribute End At before Start At date");
         }
-    
+        task.setIdUser((UUID) idRequest);
+
         return taskRepository.save(task);
     }
 
-    public List<TaskModel> getAll() throws Exception
-    {
-        if(taskRepository.count() <= 0){
-            throw new Exception("Theres no taks registred. Please, create one.");
+    public List<TaskModel> getAll() throws Exception {
+        List<TaskModel> tasks = taskRepository.findAll();
+        if (tasks.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NO_CONTENT, "No tasks found.");
         }
-        return taskRepository.findAll();
+        return tasks;
+
     }
 }

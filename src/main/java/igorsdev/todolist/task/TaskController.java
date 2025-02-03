@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,10 +24,8 @@ public class TaskController {
     @PostMapping("/create")
     public ResponseEntity<?> createTask(@RequestBody TaskModel task, HttpServletRequest request){
         try {
-            var idRequest = request.getAttribute("idUser");
-            task.setIdUser((UUID) idRequest);
-            taskService.create(task);
-            return ResponseEntity.ok().body(task);
+            TaskModel savedTask = taskService.create(task, request);
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedTask);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }   
