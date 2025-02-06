@@ -1,5 +1,5 @@
 
-package igorsdev.todolist.config.filter;
+package igorsdev.todolist.infra.filter;
 
 import java.io.IOException;
 import java.util.Base64;
